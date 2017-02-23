@@ -9,16 +9,16 @@ class LangJS{
     public static function BuildLangFiles($destination){
         $langFileFolderRoot = resource_path('lang');
         $langScriptPath = public_path($destination);
-
+        self::LogToFile("Getting File List", $langScriptPath);
         $langFiles = self::GetLangFiles($langFileFolderRoot);
-
+        self::LogToFile("Parsing To JSON", $langScriptPath);
         $json = self::ParseFilesIntoJSON($langFiles);
-
-        self::SaveJSONToFile($json, $destination);
+        self::LogToFile("Saving To File", $langScriptPath);
+        self::EmbedJSONInScript($json, $langScriptPath);
     }
 
     public static function GetLangFiles($langFileFolderRoot){
-        $files = self::DirectoryToArray($langFileFolderRoot);
+        return self::DirectoryToArray($langFileFolderRoot);
     }
 
     public static function DirectoryToArray($dir){
@@ -31,7 +31,7 @@ class LangJS{
             {
                 if (is_dir($dir . DIRECTORY_SEPARATOR . $value))
                 {
-                    $result[$value] = dirToArray($dir . DIRECTORY_SEPARATOR . $value);
+                    $result[$value] = self::DirectoryToArray($dir . DIRECTORY_SEPARATOR . $value);
                 }
                 else
                 {
@@ -44,23 +44,19 @@ class LangJS{
     }
 
     public static function ParseFilesIntoJSON($filesArray){
-        $langData = array();
-
-
-        $langData = self::ParseDirectory(resource_path('lang'), $filesArray);
+        $langData = self::ParseDirectory(resource_path('lang')."/", $filesArray);
 
         return json_encode($langData);
     }
 
     public static function ParseDirectory($pathToArray, $dirArray){
         $dirData = array();
-
         foreach($dirArray as $key=>$entry){
             if(is_array($entry)){
                 $pathToArray .= "$key/";
                 $dirData[$key]=self::ParseDirectory($pathToArray, $entry);
             }else{
-                $dirData[$key]=self::ParseFile($pathToArray, $entry);
+                $dirData[str_replace(".php","",$entry)]=self::ParseFile($pathToArray, $entry);
             }
         }
         return $dirData;
@@ -73,6 +69,20 @@ class LangJS{
     public static function SaveJSONToFile($json, $destination){
         $fp = fopen($destination, 'w');
         fwrite($fp, $json);
+        fclose($fp);
+    }
+
+    public static function EmbedJSONInScript($json, $destination){
+        $langJS = include "LangJS.js.php";
+        $langJS = str_replace("%JSON%",$json,$langJS);
+        $fp = fopen($destination, 'w');
+        fwrite($fp, $langJS);
+        fclose($fp);
+    }
+
+    public static function LogToFile($logMessage, $destination){
+        $fp = fopen($destination, 'w');
+        fwrite($fp, $logMessage);
         fclose($fp);
     }
 }

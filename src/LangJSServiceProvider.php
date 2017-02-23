@@ -24,11 +24,11 @@ class LangJSServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/langJS.php', 'langJS');
-        $this->app['langjs.build'] = $this->app->share(function () {
-            return new Commands\LangJSBuild();
+        $this->app->singleton('command.langjs.build', function ($app) {
+            return $app['AwkwardIdeas\LangJS\Commands\LangJSBuild'];
         });
         $this->commands(
-            'langjs.build'
+            'command.langjs.build'
         );
     }
 
