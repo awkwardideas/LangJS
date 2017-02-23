@@ -24,4 +24,10 @@
         return true;
     }
 };
+
+_lang=function(key, replace, locale) {
+    replace = replace || [];
+    locale = locale || "en";
+    return LangJS.Get(key,replace,locale);
+}
 SCRIPT;
