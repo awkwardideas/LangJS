@@ -10,6 +10,8 @@
         item = split;
         if(this.KeyIsSet(this.dictionary, locale, group, item)){
             return this.dictionary[locale][group][item];
+        }else{
+            return key;
         }
     },
     KeyIsSet: function(obj){
