@@ -258,6 +258,19 @@ LangJS.Translator = {
 
         return this.MakeReplacements(LangJS.Selector.Choose(line, number, locale), replace);
     },
+    Singular: function(key, replace, locale){
+        replace = replace || [];
+        locale = locale || null;
+
+        line = this.Get(key, replace, this.LocaleForChoice(locale));
+
+        replace.push({
+            key:'count',
+            value:1
+        });
+
+        return this.MakeReplacements(LangJS.Selector.Choose(line, 1, locale), replace);
+    },
     LocaleForChoice: function(locale){
         return locale ? locale : this.locale ? this.locale : this.fallback;
     },
@@ -269,7 +282,7 @@ LangJS.Translator = {
 _lang=function(key, replace, locale) {
     replace = replace || [];
     locale = locale || "en";
-    return LangJS.Translator.Get(key,replace,locale);
+    return LangJS.Translator.Singular(key,replace,locale);
 }
 _choice=function(key, number, replace, locale){
     replace = replace || [];
