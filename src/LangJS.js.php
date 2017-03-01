@@ -215,11 +215,13 @@ LangJS.Translator = {
 
         if(replace.length > 0){
             for(i=0; i<replace.length; i++){
-                value = replace[i].value;
-                key = replace[i].key;
-                line = line.replace(':' + key, value);
-                line = line.replace(':' + key.toUpperCase(), String(value).toUpperCase());
-                line = line.replace(':' + this.ucFirst(key), this.ucFirst(value));
+                if(replace[i].hasOwnProperty("value") && replace[i].hasOwnProperty("key")){
+                    value = replace[i].value;
+                    key = replace[i].key;
+                    line = line.replace(':' + key, value);
+                    line = line.replace(':' + key.toUpperCase(), String(value).toUpperCase());
+                    line = line.replace(':' + this.ucFirst(key), this.ucFirst(value));
+                }
             }
         }
         return line;
